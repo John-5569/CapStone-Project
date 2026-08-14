@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="DataFlow icon">
+  <rect x="8" y="8" width="112" height="112" rx="22" fill="#1F5CFF"/>
+
+  <g fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M38 40h26l10 10v18H38z" opacity="0.96"/>
+    <path d="M48 52h26l10 10v18H48z" opacity="0.92"/>
+    <path d="M58 64h26l10 10v18H58z" opacity="0.88"/>
+    <path d="M62 31l22 22" opacity="0.9"/>
+    <path d="M81 39l10 0v10" opacity="0.9"/>
+  </g>
+
+  <g fill="#ffffff">
+    <rect x="32" y="38" width="12" height="12" rx="2"/>
+    <rect x="42" y="50" width="12" height="12" rx="2"/>
+    <rect x="52" y="62" width="12" height="12" rx="2"/>
+  </g>
+</svg>

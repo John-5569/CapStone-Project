@@ -1,0 +1,6 @@
+async-mega-py
+pandas
+numpy
+openpyxl
+xlrd
+pyarrow
