@@ -15,11 +15,11 @@ export const Input = React.forwardRef(({ className, type, placeholder, value, on
         onChange={onChange}
         placeholder={placeholder}
         className={cn(
-          'flex h-12 w-full rounded-lg border border-[#e6e1da] bg-white px-4 py-3 text-base text-[#1e1915] transition-all',
-          'placeholder:text-[#8c827a]',
+          'flex h-12 w-full rounded-lg border border-[#e6e1da] dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-base text-[#1e1915] dark:text-slate-100 transition-all',
+          'placeholder:text-[#8c827a] dark:placeholder:text-slate-500',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0061ff] focus-visible:border-[#0061ff]',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          'hover:border-[#c5bebe]',
+          'hover:border-[#c5bebe] dark:hover:border-slate-600',
           isPassword ? 'pr-12' : '',
           className
         )}
@@ -30,7 +30,7 @@ export const Input = React.forwardRef(({ className, type, placeholder, value, on
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8c827a] hover:text-[#1e1915] p-1 transition-colors focus:outline-none"
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8c827a] dark:text-slate-400 hover:text-[#1e1915] dark:hover:text-slate-200 p-1 transition-colors focus:outline-none"
           tabIndex="-1"
           aria-label={showPassword ? "Hide password" : "Show password"}
         >

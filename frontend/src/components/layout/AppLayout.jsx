@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Database, HardDrive, Settings, LogOut, Menu, X, Activity, Layers, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Database, HardDrive, Settings, LogOut, Menu, X, Activity, Layers, History } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { Button } from '../ui/Button';
 import { cn } from '../../utils/cn';
 
@@ -10,6 +11,7 @@ const navigation = [
   { name: 'Cloud Storage', href: '/storage', icon: HardDrive },
   { name: 'Datasets', href: '/datasets', icon: Database },
   { name: 'Processing', href: '/processing', icon: Activity },
+  { name: 'History', href: '/history', icon: History },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -17,18 +19,6 @@ export const AppLayout = () => {
   const { logout, user } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   return (
     <div className="min-h-screen bg-[#f7f5f2] dark:bg-[#090d16] text-[#1e1915] dark:text-slate-100 flex transition-colors duration-200">
@@ -108,23 +98,8 @@ export const AppLayout = () => {
             <Menu className="h-6 w-6" />
           </Button>
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-end items-center">
-            {/* Theme Toggle Button */}
-            <button 
-              onClick={toggleTheme} 
-              className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-[#e6e1da] dark:border-slate-700 bg-[#f7f5f2] dark:bg-slate-800 text-xs font-semibold text-[#1e1915] dark:text-slate-200 hover:bg-[#eae6e1] dark:hover:bg-slate-700 transition-all cursor-pointer shadow-sm"
-            >
-              {theme === 'dark' ? (
-                <>
-                  <Sun className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                  <span>Light Mode</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="h-4 w-4 text-[#0061ff]" />
-                  <span>Dark Mode</span>
-                </>
-              )}
-            </button>
+            {/* Reusable Theme Toggle */}
+            <ThemeToggle />
 
             {/* User Email & Visible Logout Button */}
             <div className="flex items-center gap-x-3 pl-4 border-l border-[#e6e1da] dark:border-slate-800">

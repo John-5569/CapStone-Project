@@ -20,7 +20,6 @@ export const ForgotPassword = () => {
       await authService.forgotPassword(email);
       setSubmitted(true);
     } catch (err) {
-      // Show user friendly generic message or error from backend
       setError(err.response?.data?.detail || 'Unable to send reset link. Please check your email.');
     } finally {
       setLoading(false);
@@ -31,8 +30,8 @@ export const ForgotPassword = () => {
     return (
       <AuthCard title="Check your email">
         <div className="space-y-6 text-center">
-          <p className="text-sm text-[#615951] leading-relaxed">
-            If an account exists for <span className="font-semibold text-[#1e1915]">{email}</span>, you'll receive a password reset link shortly.
+          <p className="text-sm text-[#615951] dark:text-slate-400 leading-relaxed">
+            If an account exists for <span className="font-semibold text-[#1e1915] dark:text-white">{email}</span>, you'll receive a password reset link shortly.
           </p>
 
           <Link to="/login" className="block w-full">
@@ -53,13 +52,13 @@ export const ForgotPassword = () => {
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
+          <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/60 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800">
             {error}
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label className="text-sm font-semibold text-[#1e1915]">Email</label>
+          <label className="text-sm font-semibold text-[#1e1915] dark:text-slate-200">Email</label>
           <Input
             type="email"
             placeholder="Enter your email"
@@ -69,13 +68,13 @@ export const ForgotPassword = () => {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full font-semibold" disabled={loading}>
           {loading ? 'Sending...' : 'Send reset link'}
         </Button>
       </form>
 
-      <div className="mt-8 text-center text-sm pt-6 border-t border-[#e6e1da]">
-        <Link to="/login" className="text-sm text-[#615951] hover:text-[#1e1915] font-medium transition-colors">
+      <div className="mt-8 text-center text-sm pt-6 border-t border-[#e6e1da] dark:border-slate-800">
+        <Link to="/login" className="text-sm text-[#615951] dark:text-slate-400 hover:text-[#1e1915] dark:hover:text-white font-medium transition-colors">
           Back to login
         </Link>
       </div>

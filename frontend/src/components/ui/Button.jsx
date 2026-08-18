@@ -6,9 +6,9 @@ export const Button = React.forwardRef(({ className, variant = 'primary', size =
   
   const variants = {
     primary: 'bg-[#0061ff] hover:bg-[#0052d6] text-white rounded-lg shadow-sm border border-[#0052d6]',
-    secondary: 'bg-[#f1ede8] text-[#1e1915] hover:bg-[#e6e1da] rounded-lg border border-[#e6e1da]',
-    outline: 'border border-[#e6e1da] bg-white hover:bg-[#f7f5f2] text-[#1e1915] rounded-lg',
-    ghost: 'hover:bg-[#f1ede8] text-[#1e1915] rounded-lg',
+    secondary: 'bg-[#f1ede8] dark:bg-slate-800 text-[#1e1915] dark:text-slate-100 hover:bg-[#e6e1da] dark:hover:bg-slate-700 rounded-lg border border-[#e6e1da] dark:border-slate-700',
+    outline: 'border border-[#e6e1da] dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-[#f7f5f2] dark:hover:bg-slate-800 text-[#1e1915] dark:text-slate-100 rounded-lg',
+    ghost: 'hover:bg-[#f1ede8] dark:hover:bg-slate-800 text-[#1e1915] dark:text-slate-100 rounded-lg',
   };
 
   const sizes = {

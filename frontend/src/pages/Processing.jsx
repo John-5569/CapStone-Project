@@ -18,10 +18,15 @@ export const Processing = () => {
 
     let interval;
     const fetchStatus = async () => {
-      const res = await processingService.getJobStatus(jobId);
-      setStatus(res);
-      
-      if (res.status === 'COMPLETED' || res.status === 'FAILED') {
+      try {
+        const res = await processingService.getJobStatus(jobId);
+        setStatus(res);
+
+        if (res.status === 'COMPLETED' || res.status === 'FAILED') {
+          clearInterval(interval);
+        }
+      } catch {
+        setStatus({ status: 'FAILED', progress: 100 });
         clearInterval(interval);
       }
     };

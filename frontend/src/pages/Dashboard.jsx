@@ -9,14 +9,18 @@ import { motion } from 'framer-motion';
 
 export const Dashboard = () => {
   const { user } = useAuth();
-  const [datasets, setDatasets] = useState([]);
+  const [datasetTotal, setDatasetTotal] = useState(0);
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      const dSets = await datasetService.getDatasets();
-      setDatasets(dSets);
+      try {
+        const response = await datasetService.getDatasets(1, 10);
+        setDatasetTotal(response?.pagination?.total || 0);
+      } catch {
+        setDatasetTotal(0);
+      }
     };
-    
+
     loadDashboardData();
   }, []);
 
@@ -40,7 +44,7 @@ export const Dashboard = () => {
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-5xl font-display font-bold mt-2">{datasets.length}</div>
+              <div className="text-5xl font-display font-bold mt-2">{datasetTotal}</div>
               <p className="text-xs text-muted-foreground mt-2">Connected cloud datasets</p>
             </CardContent>
           </Card>
@@ -58,7 +62,7 @@ export const Dashboard = () => {
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-2xl font-display font-bold mt-2">{datasets.length > 0 ? 'Connected (MEGA)' : 'Not Connected'}</div>
+              <div className="text-2xl font-display font-bold mt-2">{datasetTotal > 0 ? 'Connected (MEGA)' : 'Not Connected'}</div>
               <p className="text-xs text-muted-foreground mt-2">Storage integration status</p>
             </CardContent>
           </Card>

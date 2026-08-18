@@ -4,14 +4,16 @@ pydantic
 pymongo
 PyJWT
 fastapi-mail
-mega
+async-mega-py
 passlib
 bcrypt
 python-jose[cryptography]
 python-dotenv
 kubernetes
+google-auth
 pandas
 numpy
 openpyxl
 xlrd
 pyarrow
+motor

@@ -18,24 +18,51 @@ const isSupportedDataset = (fileName) => {
 
 export const Datasets = () => {
   const [datasets, setDatasets] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+    hasNext: false,
+    hasPrevious: false
+  });
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const navigate = useNavigate();
+  const LIMIT = 10;
 
   useEffect(() => {
     const loadDatasets = async () => {
       try {
-        const data = await datasetService.getDatasets();
-        setDatasets(data);
+        setLoading(true);
+        const result = await datasetService.getDatasets(page, LIMIT);
+        setDatasets(result.data || []);
+        setPagination(result.pagination || {
+          page,
+          limit: LIMIT,
+          total: 0,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false
+        });
       } catch (err) {
-        console.error(err);
+        setDatasets([]);
+        setPagination({
+          page: 1,
+          limit: LIMIT,
+          total: 0,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false
+        });
       } finally {
         setLoading(false);
       }
     };
     loadDatasets();
-  }, []);
+  }, [page]);
 
   const handleProcess = async (fileId) => {
     const selectedDataset = datasets.find(d => d.fileId === fileId);
@@ -47,12 +74,6 @@ export const Datasets = () => {
     setProcessingId(fileId);
     try {
       const result = await processingService.processDataset(fileId);
-      processingService.saveJobToHistory({
-        jobId: result.jobId,
-        fileId: fileId,
-        fileName: selectedDataset.fileName,
-        status: 'PENDING'
-      });
       navigate(`/processing?jobId=${result.jobId}`);
     } catch (err) {
       alert(err.response?.data?.detail || 'Failed to start processing');
@@ -62,6 +83,8 @@ export const Datasets = () => {
   };
 
   const filtered = datasets.filter(d => d.fileName?.toLowerCase().includes(search.toLowerCase()));
+  const pageStart = pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1;
+  const pageEnd = Math.min(pagination.page * pagination.limit, pagination.total);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -161,6 +184,35 @@ export const Datasets = () => {
           )}
         </CardContent>
       </Card>
+
+      {!loading && pagination.total > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {pageStart}-{pageEnd} of {pagination.total} datasets
+          </p>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={!pagination.hasPrevious || loading}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground min-w-24 text-center">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((prev) => prev + 1)}
+              disabled={!pagination.hasNext || loading}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

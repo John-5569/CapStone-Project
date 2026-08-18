@@ -7,43 +7,123 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if token exists on mount
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Backend does not currently have a /auth/me endpoint.
-      // We will assume token presence means authenticated for now.
-      // In a real app, you'd decode the JWT or fetch user details.
-      try {
-        // Decode JWT manually (basic decoding without validation, just for UI)
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser({ email: payload.sub });
-      } catch (e) {
-        setUser({ email: 'user@example.com' });
-      }
+  const setSessionFromAccessToken = (token, rememberMe = false) => {
+    if (rememberMe) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
     }
-    setLoading(false);
+    sessionStorage.setItem('token', token);
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setUser({ email: payload.sub });
+    } catch (e) {
+      setUser({ email: 'user@example.com' });
+    }
+  };
+
+  const hydrateUserFromToken = () => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setUser({ email: payload.sub });
+    } catch (e) {
+      setUser({ email: 'user@example.com' });
+    }
+  };
+
+  const refreshSession = async () => {
+    try {
+      const data = await authService.refresh();
+      const token = data.accessToken || data.access_token || data.token;
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+
+      if (token) {
+        sessionStorage.setItem('token', token);
+        if (rememberMe) {
+          localStorage.setItem('token', token);
+        } else {
+          localStorage.removeItem('token');
+        }
+      }
+      hydrateUserFromToken();
+      return data;
+    } catch (error) {
+      sessionStorage.removeItem('token');
+      if (localStorage.getItem('rememberMe') !== 'true') {
+        localStorage.removeItem('token');
+        setUser(null);
+      }
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const bootstrapAuth = async () => {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+
+      if (token) {
+        hydrateUserFromToken();
+      }
+
+      if (token || rememberMe) {
+        try {
+          await refreshSession();
+        } catch (error) {
+          console.warn('Session refresh failed:', error);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    bootstrapAuth();
   }, []);
 
-  const login = async (email, password) => {
-    const data = await authService.login(email, password);
+  const login = async (email, password, rememberMe = false) => {
+    const data = await authService.login(email, password, rememberMe);
     const token = data.accessToken || data.access_token || data.token || data;
-    localStorage.setItem('token', token);
-    setUser({ email });
+    setSessionFromAccessToken(token, rememberMe);
+    if (rememberMe) {
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      localStorage.removeItem('rememberMe');
+    }
+  };
+
+  const loginWithGoogle = async (idToken) => {
+    const data = await authService.googleLogin(idToken);
+    const token = data.accessToken || data.access_token || data.token || data;
+    setSessionFromAccessToken(token, true);
+    localStorage.setItem('rememberMe', 'true');
   };
 
   const register = async (email, password) => {
     await authService.register(email, password);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('datasets');
-    setUser(null);
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.warn('Logout request failed, clearing local session anyway:', error);
+    } finally {
+      sessionStorage.removeItem('token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('rememberMe');
+      setUser(null);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, register, logout, refreshSession }}>
       {children}
     </AuthContext.Provider>
   );

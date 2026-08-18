@@ -63,6 +63,46 @@ class Security:
         
         token=authorization.split(" ")[1]
 
-        return self.decodeToken(token)
+        payload = self.decodeToken(token)
+
+        if not payload:
+
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid or expired access token."
+            )
+
+        if payload.get("type") != "access":
+
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token type."
+            )
+
+        return payload
+
+
+    def createRefreshToken(
+        self,
+        data: dict,
+        refreshDays: int
+    ) -> str:
+
+        payload = data.copy()
+
+        payload["exp"] = (
+            datetime.utcnow()
+            + timedelta(days=refreshDays)
+        )
+
+        payload["type"] = "refresh"
+
+        return jwt.encode(
+            payload,
+            SECRET_KEY,
+            algorithm=ALGORITHM
+        )
+            
+            
 
 security = Security()

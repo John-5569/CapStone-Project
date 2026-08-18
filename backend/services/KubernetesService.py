@@ -177,3 +177,30 @@ class KubernetesService:
             "fileId": fileId,
             "status": "processing"
         }
+
+    def getProcessingJobStatus(self, jobId: str):
+
+        if not self.k8s_available:
+            return None
+
+        try:
+            job = self.batch_api.read_namespaced_job_status(
+                name=jobId,
+                namespace="default"
+            )
+            status = job.status
+
+            if status.succeeded and status.succeeded > 0:
+                return {"status": "COMPLETED", "progress": 100}
+
+            if status.failed and status.failed > 0:
+                return {"status": "FAILED", "progress": 100}
+
+            if status.active and status.active > 0:
+                return {"status": "RUNNING", "progress": 50}
+
+            return {"status": "PENDING", "progress": 0}
+        except ApiException:
+            return None
+        except Exception:
+            return None

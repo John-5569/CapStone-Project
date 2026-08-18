@@ -39,13 +39,13 @@ export const ResetPassword = () => {
     <AuthCard title="Create a new password" backLink="/login">
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
+          <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/60 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800">
             {error}
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label className="text-sm font-semibold text-[#1e1915]">New password</label>
+          <label className="text-sm font-semibold text-[#1e1915] dark:text-slate-200">New password</label>
           <Input
             type="password"
             placeholder="Enter new password"
@@ -55,13 +55,13 @@ export const ResetPassword = () => {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full font-semibold" disabled={loading}>
           {loading ? 'Resetting...' : 'Reset password'}
         </Button>
       </form>
 
-      <div className="mt-8 text-center text-sm pt-6 border-t border-[#e6e1da]">
-        <Link to="/login" className="text-sm text-[#615951] hover:text-[#1e1915] font-medium transition-colors">
+      <div className="mt-8 text-center text-sm pt-6 border-t border-[#e6e1da] dark:border-slate-800">
+        <Link to="/login" className="text-sm text-[#615951] dark:text-slate-400 hover:text-[#1e1915] dark:hover:text-white font-medium transition-colors">
           Back to login
         </Link>
       </div>

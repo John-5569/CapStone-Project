@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storageService } from '../api/storageService';
-import { datasetService } from '../api/datasetService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -11,6 +10,7 @@ export const StorageConnect = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkingConnected, setCheckingConnected] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
@@ -22,10 +22,7 @@ export const StorageConnect = () => {
     setSuccess('');
 
     try {
-      // Connects to storage AND fetches datasets in the same backend endpoint
-      const datasets = await storageService.connectCloud(email, password);
-      // Cache datasets for UI use
-      datasetService.saveDatasets(datasets);
+      await storageService.connectCloud(email, password);
       
       setSuccess('Successfully connected to MEGA!');
       setTimeout(() => navigate('/datasets'), 1500);
@@ -33,6 +30,22 @@ export const StorageConnect = () => {
       setError(err.response?.data?.detail || err.message || 'Failed to connect. Check your credentials.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConnectAlready = async () => {
+    setCheckingConnected(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      await storageService.connectAlready();
+      setSuccess('Cloud is already connected. Redirecting to datasets...');
+      setTimeout(() => navigate('/datasets'), 1000);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'No existing cloud connection found. Please connect with your MEGA credentials.');
+    } finally {
+      setCheckingConnected(false);
     }
   };
 
@@ -88,6 +101,14 @@ export const StorageConnect = () => {
               </div>
               <Button type="submit" disabled={loading}>
                 {loading ? 'Connecting...' : 'Connect MEGA Account'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={checkingConnected || loading}
+                onClick={handleConnectAlready}
+              >
+                {checkingConnected ? 'Checking...' : 'Already Connected? Continue'}
               </Button>
             </form>
           </CardContent>
